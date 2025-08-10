@@ -1,33 +1,40 @@
-# todo-vue
+# Projeto Todo-list FrontendMentor
 
-This template should help get you started developing with Vue 3 in Vite.
+## Menu
+[Planejamento](#planejamento)  
 
-## Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Planejamento
+O projeto é dividido em 2 partes:
 
-## Type Support for `.vue` Imports in TS
+### Cabeçalho
+* Titulo
+* Seleção do modo claro e escuro
+* Campo para inserir a atividade
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+### Lista de atividades
+* Com as atividades adicionadas
+* Quantidade de tarefas pendentes
+* Filtro para mostrar todas as tarefas, as completas ou pendente.
+* Botão para apagar todas as tarefas completadas.
+* Tem a capacidade de reordenar as atividades arrastando os elementos
 
-## Customize configuration
+## O que eu tenho que fazer:
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Cabeçalho
+- Adicionar imagem de fundo
+- Adicionar título
+- Adicionar input para a nova tarefa
+    - Tenho que pensar como vou fazer a estilização
+    - v-show 
+    -
 
-## Project Setup
+- Separar em componentes
 
-```sh
-npm install
-```
+Sobre o input eu estou pensando em fazer com um form, mas isso necessitária de um botão, a referência desse todo list não possui um botão, não sei se coloco um v-show com uma condicional para aparecer o botão de adicionar ou se deixo já o botão exposto. 
 
-### Compile and Hot-Reload for Development
 
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
+## Estudar
+* Pinia
+* Vuex (store)
+* store
