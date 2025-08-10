@@ -1,58 +1,135 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
+import { CircleCheck } from 'lucide-vue-next';
 
 const estado = reactive({
+  tema: 'light',
+  filtro: 'all',
   listaTarefas: [
     {
-      titulo: 'teste',
-      finalizado: false,
+      titulo: 'teste1',
+      finalizada: false,
     },
     {
-      titulo: 'teste',
-      finalizado: false,
+      titulo: 'teste2',
+      finalizada: false,
     },
     {
-      titulo: 'teste',
-      finalizado: false,
+      titulo: 'teste3',
+      finalizada: true,
     },
-    ],
-    
+  ],
+
   tarefaTemp: '',
 })
+
+
+const alterarTema = () => {
+  if (estado.tema === 'dark') {
+    return estado.tema = 'light'
+  }
+
+  else {
+    return estado.tema = 'dark'
+  }
+}
+
+
+
+
 
 const cadastrarAtividade = () => {
   const novaAtividade = {
     titulo: estado.tarefaTemp,
-    finalizado: false,
+    finalizada: false,
   }
   estado.listaTarefas.push(novaAtividade);
   estado.tarefaTemp = '';
 
-
-
 }
+
+const all = () => {
+  estado.filtro = 'all';
+}
+const active = () => {
+  estado.filtro = 'active';
+}
+const completed = () => {
+  estado.filtro = 'completed';
+}
+
+const tarefasPendentes = () => {
+
+  return estado.listaTarefas.filter(lista => !lista.finalizada)
+}
+const tarefasFinalizadas = () => {
+
+  return estado.listaTarefas.filter(lista => lista.finalizada)
+}
+
+
+const filtro = () => {
+  const { filtro } = estado;
+  switch (filtro) {
+
+    case 'active':
+      return tarefasPendentes();
+
+    case 'completed':
+      return tarefasFinalizadas();
+
+    default:
+      return estado.listaTarefas
+  }
+}
+
+
+
+const apagarTarefas = () => {
+  estado.listaTarefas = tarefasPendentes();
+}
+
 </script>
 
 <template>
-  <div class="container">
+  <div class="container__todo">
+    <header class="header">
+      <h1>TODO</h1>
+      <button @click="alterarTema" type="button">
+        <img v-if="estado.tema != 'light'" src="../src/images/icon-sun.svg" alt="">
+        <img v-else src="../src/images/icon-moon.svg" alt="">
+      </button>
+    </header>
 
-    <h1>TODO</h1>
-    <form class="form" action="">
-        <div class="form__checked">
-          <input type="checkbox">
-        </div>
-        <input class="form__input" v-model="estado.tarefaTemp" type="text" placeholder="Crie uma nova atividade">
-        <button  class="form__submit" type="submit">Adicionar</button>    
+    <form class="form" @submit.prevent="cadastrarAtividade">
+      <div class="form__checked">
+        <input type="checkbox">
+      </div>
+      <input required class="form__input" v-model="estado.tarefaTemp" type="text" placeholder="Crie uma nova atividade">
+
     </form>
-    <ul class="lista__tarefas">
-      <li class="lista__tarefas__item" v-for="tarefa in estado.listaTarefas">
-        {{ tarefa.titulo }}
-      </li>
-    </ul>
-    <div class="info">
-      <span class="info__quantidade">{{  }} items left</span>
+    <section class="lista">
+      <ul class="lista__tarefas">
+        <li class="lista__tarefas__item" v-for="tarefa in filtro()">
+          <div class="form__checked">
+            <CircleCheck v-if="tarefa.finalizada" />
 
-    </div>
+            <input v-model="tarefa.finalizada" :checked="tarefa.finalizada" type="checkbox">
+          </div>
+          <label for="">{{ tarefa.titulo }}</label>
+        </li>
+      </ul>
+      <div class="info">
+        <span class="info__quantidade">{{ tarefasPendentes().length }} items left</span>
+        <div class="info-filtro">
+          <button class="btn btn__all" @click="all" type="button">all</button>
+          <button class="btn btn__active" @click="active" type="button">active</button>
+          <button class="btn btn__completed" @click="completed" type="button">completed</button>
+        </div>
+        <button @click="apagarTarefas" class="btn">Clear completed</button>
+
+      </div>
+    </section>
   </div>
 </template>
 
@@ -61,6 +138,7 @@ const cadastrarAtividade = () => {
 
 //Cor de fundo
 $cor-fundo-dark: #181824;
+$cor-fundo-light: #FAFAFA;
 $cor-fundo-lista: #25273C;
 
 // Cor da fonte
@@ -89,16 +167,36 @@ $cor-borda-checkbox: #323449;
 
 
 body {
-  background-color: $cor-fundo-dark;
   font-family: "Josefin Sans", sans-serif;
-  background-image: url(images/bg-desktop-dark.jpg);
-  background-repeat: no-repeat;
-  background-size: cover;
   font-size: 18px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url(images/bg-desktop-dark.jpg);
+  background-color: $cor-fundo-dark;
+
+  .dark {}
+
+
+  .light {
+    background-image: url(images/bg-desktop-light.jpg);
+    background-color: $cor-fundo-light;
+  }
 
 }
 
-.container {
+.header {
+  max-width: 90%;
+  display: flex;
+  justify-content: space-between;
+
+  button {
+    all: unset;
+    margin-bottom: 12px;
+  }
+}
+
+
+.container__todo {
   display: flex;
   flex-direction: column;
   padding-top: 4rem;
@@ -116,7 +214,9 @@ body {
   .form {
     display: flex;
     justify-content: space-around;
+    align-items: center;
     @include estiloLista();
+    margin-bottom: 2rem;
 
     &__input {
       all: unset;
@@ -125,37 +225,64 @@ body {
     }
 
     &__checked {
-      height: 20px;
-      width: 20px;
+      margin-right: 1rem;
+      height: 24px;
+      width: 24px;
       border: 1px solid $cor-borda-checkbox;
       border-radius: 50%;
       position: relative;
-      
+
 
       input {
         appearance: none;
         position: absolute;
         border: 50%;
-        inset:0;
+        inset: 0;
 
       }
+
       &:has(input:checked) {
-        background-color: #5378C8;
+        background: linear-gradient(135deg, #4C99FF 0%, #8055F7 100%);
       }
     }
   }
 
-  .lista__tarefas {
+  .lista {
     @include estiloLista();
-    &__item {
-      color: $cor-fonte-tarefa-incompleta;
-      list-style: none;
-      width: 100%;
-      border-bottom: 1px solid $cor-borda-lista;
-      
+
+    &__tarefas {
+
+      &__item {
+        display: flex;
+        color: $cor-fonte-tarefa-incompleta;
+        list-style: none;
+        width: 100%;
+        border-bottom: 1px solid $cor-borda-lista;
+
+      }
     }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &__quantidade{
+        font-size: 0.8rem;
+        padding: 0px 4px;
+        color: $cor-fonte-tarefa-incompleta;
+
+      }
+    }
+
   }
 
-  
+  .btn {
+    all: unset;
+    padding: 0px 4px;
+    color: $cor-fonte-tarefa-incompleta;
+    cursor: alias;
+    font-size: 0.8rem;
+  }
 }
 </style>
